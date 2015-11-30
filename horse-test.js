@@ -122,7 +122,6 @@ solutions.boiko_natalia = function (Board) {
     return findPath(Board);
 };
 
-
 // YOUR SOLUTION
 solutions.dobrooskok_yaroslav = function (Board) {
     // GOES HERE
@@ -276,7 +275,7 @@ solutions.dobrooskok_yaroslav = function (Board) {
 
     searchShortWay(n, x0, y0, xf, yf, squares);
 
-    findRevesrseWay();
+    return findRevesrseWay();
 };
 
 
