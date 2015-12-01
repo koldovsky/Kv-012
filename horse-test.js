@@ -2,149 +2,135 @@ var assert = require('assert');
 
 var solutions = {};
 
-solutions.fake_fakovich = function (Board) {
-    function pauseComp(ms) {
-        var curr = new Date().getTime();
-        ms += curr;
-        while (curr < ms) {
-            curr = new Date().getTime();
-        }
-    }
-
-    pauseComp(Math.random() * 2000);
-    return Array(5);
-
-};
-
 
 // YOUR SOLUTION
 solutions.boiko_natalia = function (Board) {
 
     var findPath = function (matrix) {
-      var start = {};
-      var finish = {};
-      var queue = [];
-      var memory = {};
-      var currentLocation;
-      var newPath = [];
-      var prevPath;
+        var start = {};
+        var finish = {};
+        var queue = [];
+        var memory = {};
+        var currentLocation;
+        var newPath = [];
+        var prevPath;
 
-      //Find coordinates of start
-      for (var i = 0; i < matrix.length; i++){
-        if (matrix[i].indexOf('s') !== -1) {
-          start.t = i;
-          start.l = matrix[i].indexOf('s');
-          break;
+        //Find coordinates of start
+        for (var i = 0; i < matrix.length; i++) {
+            if (matrix[i].indexOf('s') !== -1) {
+                start.t = i;
+                start.l = matrix[i].indexOf('s');
+                break;
+            }
         }
-      }
 
-      //Find coordinates of end
-      for (var i = 0; i < matrix.length; i++){
-        if (matrix[i].indexOf('f') !== -1) {
-          finish.t = i;
-          finish.l = matrix[i].indexOf('f');
-          break;
+        //Find coordinates of end
+        for (var i = 0; i < matrix.length; i++) {
+            if (matrix[i].indexOf('f') !== -1) {
+                finish.t = i;
+                finish.l = matrix[i].indexOf('f');
+                break;
+            }
         }
-      }
 
-      //Options for points to check (difference from start(currentLocation) point)
+        //Options for points to check (difference from start(currentLocation) point)
         var steps = [
-          {
-            't': 1,
-            'l': 2
-          }, 
-          {
-            't': -1,
-            'l': -2
-          },
-          {
-            't': 2,
-            'l': 1
-          },
-          {
-            't': -2,
-            'l': -1
-          },
-          {
-            't': 2,
-            'l': -1
-          },
-          {
-            't': -2,
-            'l': 1
-          },
-          {
-            't': 1,
-            'l': -2
-          },
-          {
-            't': -1,
-            'l':  2
-          },
+            {
+                't': 1,
+                'l': 2
+            },
+            {
+                't': -1,
+                'l': -2
+            },
+            {
+                't': 2,
+                'l': 1
+            },
+            {
+                't': -2,
+                'l': -1
+            },
+            {
+                't': 2,
+                'l': -1
+            },
+            {
+                't': -2,
+                'l': 1
+            },
+            {
+                't': 1,
+                'l': -2
+            },
+            {
+                't': -1,
+                'l': 2
+            },
         ];
 
         // Initialize the queue with the start location already inside
 
         function createQueue(currentLocation, curentStep, memory, queue) {
 
-          var spot = {
-            t: currentLocation.t + curentStep.t,
-            l: currentLocation.l + curentStep.l
-          };
+            var spot = {
+                t: currentLocation.t + curentStep.t,
+                l: currentLocation.l + curentStep.l
+            };
 
-          memory[''+ (currentLocation.t + curentStep.t) + (currentLocation.l + curentStep.l)] = {
-            prev: memory['' + currentLocation.t + currentLocation.l],
-            path: [currentLocation.t + curentStep.t, currentLocation.l + curentStep.l]
-          }
+            memory['' + (currentLocation.t + curentStep.t) + (currentLocation.l + curentStep.l)] = {
+                prev: memory['' + currentLocation.t + currentLocation.l],
+                path: [currentLocation.t + curentStep.t, currentLocation.l + curentStep.l]
+            }
 
-          queue.push(spot);
+            queue.push(spot);
 
         };
 
-        memory[''+start.t+start.l] = {
-          prev: null,
-          path: [start.t, start.l]
+        memory['' + start.t + start.l] = {
+            prev: null,
+            path: [start.t, start.l]
         }
 
         queue = [{
-          t: start.t,
-          l: start.l
+            t: start.t,
+            l: start.l
         }];
 
 
         // Loop through the grid searching for the goal
         while (queue.length > 0) {
-          
-          currentLocation = queue.shift();
 
-          for (var i = 0; i < steps.length; i++){
-            //Check if point is not out of grid
-            if (currentLocation.t + steps[i].t >= 0 && currentLocation.t + steps[i].t < matrix.length && currentLocation.l + steps[i].l >= 0 && currentLocation.l + steps[i].l < matrix[0].length) {
-              //Check if cell is free from obstacles and was not visited before
-                
+            currentLocation = queue.shift();
 
-                if (matrix[currentLocation.t + steps[i].t][currentLocation.l + steps[i].l] === 0) {
+            for (var i = 0; i < steps.length; i++) {
+                //Check if point is not out of grid
+                if (currentLocation.t + steps[i].t >= 0 && currentLocation.t + steps[i].t < matrix.length && currentLocation.l + steps[i].l >= 0 && currentLocation.l + steps[i].l < matrix[0].length) {
+                    //Check if cell is free from obstacles and was not visited before
 
-                  createQueue(currentLocation, steps[i], memory, queue);
 
-                  matrix[currentLocation.t + steps[i].t][currentLocation.l + steps[i].l] = -1;
-                } else if (matrix[currentLocation.t + steps[i].t][currentLocation.l + steps[i].l] === 'f') {
-                  newPath.push([currentLocation.t + steps[i].t, currentLocation.l + steps[i].l]);
+                    if (matrix[currentLocation.t + steps[i].t][currentLocation.l + steps[i].l] === 0) {
 
-                  prevPath = memory[''+ currentLocation.t+ currentLocation.l];
-                  
-                  do {
-                    newPath.push(prevPath.path);
-                    prevPath = prevPath.prev;
-                  } while (prevPath.prev !== null) 
+                        createQueue(currentLocation, steps[i], memory, queue);
 
-                  newPath.push(prevPath.path);
+                        matrix[currentLocation.t + steps[i].t][currentLocation.l + steps[i].l] = -1;
+                    } else if (matrix[currentLocation.t + steps[i].t][currentLocation.l + steps[i].l] === 'f') {
+                        newPath.push([currentLocation.t + steps[i].t, currentLocation.l + steps[i].l]);
 
-                  return newPath;
+                        prevPath = memory['' + currentLocation.t + currentLocation.l];
+
+                        do {
+                            newPath.push(prevPath.path);
+                            prevPath = prevPath.prev;
+                        } while (prevPath.prev !== null)
+
+                        newPath.push(prevPath.path);
+
+                        return newPath;
+                    }
+
                 }
-
             }
-          }
 
         }
 
@@ -183,8 +169,8 @@ solutions.dobrooskok_yaroslav = function (Board) {
 
         var i, j, l = squares.length;
 
-        for (i=0; i < l; i++)
-            for (j=0; j < l; j++) {
+        for (i = 0; i < l; i++)
+            for (j = 0; j < l; j++) {
                 if (squares[i][j] === 's') {
                     flagStart = true;
                     x0 = i;
@@ -205,7 +191,7 @@ solutions.dobrooskok_yaroslav = function (Board) {
     };
 
     // Конструктор клетки
-    var Kletka = function(x, y){
+    var Kletka = function (x, y) {
         this.x = x;
         this.y = y;
     }
@@ -219,30 +205,30 @@ solutions.dobrooskok_yaroslav = function (Board) {
     }
 
     // Метод нахождения всех доступных ходов из всех клеток на текущем шаге
-    var findAvailable = function(currentStep) {
+    var findAvailable = function (currentStep) {
         var flag = false;
         while (!flag) {
-            steps.push(new Step(currentStep+1, []));
+            steps.push(new Step(currentStep + 1, []));
             var i, j, l = steps[currentStep].kletki.length;
             main:
                 for (i = 0; i < l; i++) {
                     var curX = steps[currentStep].kletki[i].x;
                     var curY = steps[currentStep].kletki[i].y;
 
-                    var suspX = [curX+1, curX+2, curX+2, curX+1, curX-1, curX-2, curX-2, curX-1];
-                    var suspY = [curY+2, curY+1, curY-1, curY-2, curY-2, curY-1, curY+1, curY+2];
+                    var suspX = [curX + 1, curX + 2, curX + 2, curX + 1, curX - 1, curX - 2, curX - 2, curX - 1];
+                    var suspY = [curY + 2, curY + 1, curY - 1, curY - 2, curY - 2, curY - 1, curY + 1, curY + 2];
 
-                    for (j = 0; j < suspX.length; j++ ) {
+                    for (j = 0; j < suspX.length; j++) {
 
                         if (suspX[j] >= 0 && suspY[j] >= 0 && suspX[j] < n && suspY[j] < n && squares[suspX[j]][suspY[j]] === 0) {
-                            steps[currentStep+1].kletki.push(new Kletka(suspX[j], suspY[j]));
-                            squares[ suspX[j] ] [ suspY[j] ] = currentStep+1;
+                            steps[currentStep + 1].kletki.push(new Kletka(suspX[j], suspY[j]));
+                            squares[suspX[j]] [suspY[j]] = currentStep + 1;
                         }
 
                         if (suspX[j] == xf && suspY[j] == yf) {
                             var numsteps = currentStep;
                             flag = true;
-                            squares[suspX[j]][suspY[j]] = currentStep+1;
+                            squares[suspX[j]][suspY[j]] = currentStep + 1;
                             minNumSteps = numsteps;
                             break main;
                         }
@@ -256,7 +242,7 @@ solutions.dobrooskok_yaroslav = function (Board) {
     }
 
     // Method finds a reverse way to a start point
-    var findRevesrseWay = function(){
+    var findRevesrseWay = function () {
 
         var resArray = [];
         var currentStep = minNumSteps;
@@ -267,8 +253,8 @@ solutions.dobrooskok_yaroslav = function (Board) {
         resArray.push([xf, yf]);
 
         while (currentStep >= 1) {
-            var suspX = [curX+1, curX+2, curX+2, curX+1, curX-1, curX-2, curX-2, curX-1];
-            var suspY = [curY+2, curY+1, curY-1, curY-2, curY-2, curY-1, curY+1, curY+2];
+            var suspX = [curX + 1, curX + 2, curX + 2, curX + 1, curX - 1, curX - 2, curX - 2, curX - 1];
+            var suspY = [curY + 2, curY + 1, curY - 1, curY - 2, curY - 2, curY - 1, curY + 1, curY + 2];
 
             var i, l = suspX.length;
             for (i = 0; i < l; i++) {
@@ -294,7 +280,7 @@ solutions.dobrooskok_yaroslav = function (Board) {
      x0, y0 - координаты стартовой точки
      xf, yf - координаты конечной точки
      squares - двумерный массив клеток доски, где 0 - свободные клетки, а -1 - недоступные */
-    var searchShortWay = function(n, x0, y0, xf, yf, squares) {
+    var searchShortWay = function (n, x0, y0, xf, yf, squares) {
         // Текущий шаг
         var currentStep = 1;
 
@@ -644,188 +630,188 @@ solutions.maltsev_valerii = function (Board) {
 
 
 // YOUR SOLUTION
-solutions.martyniuk_oleksandra = function (Board) {
-    // GOES HERE
-    //var start = new Date();
-    var result = createOptimalPath(Board);
-//var end = new Date();
-//alert('Time: ' + (end.getTime() - start.getTime()) + ' mc');
-    //document.write(result);
-    return result;
-
-    /**
-     Creation incidence matrix for horse in chess
-     */
-    function createIncidenceMatrix(matrixChess) {
-        var sizeChessBoard = matrixChess.length;
-        var size = sizeChessBoard * sizeChessBoard;
-        var array = new Array(size);
-        var i, j;
-
-        for (i = 0; i < size; i++) {
-            array[i] = new Array(size);
-        }
-        for (i = 0; i < size; i++) {
-            for (j = 0; j < size; j++) {
-                //see only lower triangular matrix
-                if (i >= j) {
-                    //down right
-                    //if start or end =-1 we can't built IncidenceMatrix (j+1*n)
-                    if ((matrixChess[~~(i / sizeChessBoard)][i % sizeChessBoard] != -1) && (matrixChess[~~(j / sizeChessBoard)][j % sizeChessBoard] != -1)) {
-                        //down right!
-                        var dw = j + 2 * sizeChessBoard + 1;
-                        if ((dw == i) && (dw < size) && (j % sizeChessBoard != (sizeChessBoard - 1))) {
-                            array[j][i] = 1;
-                            array[i][j] = 1;
-                        }
-                        else {
-                            //down left!
-                            dw = j + 2 * sizeChessBoard - 1;
-                            if ((dw == i) && (dw < size) && (j % sizeChessBoard != 0)) {
-                                array[j][i] = 1;
-                                array[i][j] = 1;
-                            }
-                            else {
-                                //up right!
-                                dw = j - 2 * sizeChessBoard + 1;
-                                if ((dw == i) && (dw < size) && (dw >= 0) && (j % sizeChessBoard != (sizeChessBoard - 1))) {
-                                    array[j][i] = 1;
-                                    array[i][j] = 1;
-                                }
-                                else {
-                                    //up left!
-                                    dw = j - 2 * sizeChessBoard - 1;
-                                    if ((dw == i) && (dw >= 0) && (j % sizeChessBoard != 0)) {
-                                        array[j][i] = 1;
-                                        array[i][j] = 1;
-                                    }
-                                    else {
-                                        //left up
-                                        dw = j - sizeChessBoard - 2;
-                                        if ((dw == i) && (dw < size) && (dw >= 0) && !(j % sizeChessBoard <= 1)) {
-                                            array[j][i] = 1;
-                                            array[i][j] = 1;
-                                        }
-                                        else {
-                                            //left down
-                                            dw = j + sizeChessBoard - 2;
-                                            if ((dw == i) && (dw < size) && (dw >= 0) && !(j % sizeChessBoard <= 1)) {
-                                                array[j][i] = 1;
-                                                array[i][j] = 1;
-                                            }
-                                            else {
-                                                //right up
-                                                dw = j - sizeChessBoard + 2;
-                                                if ((dw == i) && (dw < size) && (dw >= 0) && !(j % sizeChessBoard >= sizeChessBoard - 2)) {
-                                                    array[j][i] = 1;
-                                                    array[i][j] = 1;
-                                                }
-                                                else {
-                                                    //right down
-                                                    dw = j + sizeChessBoard + 2;
-                                                    if ((dw == i) && (dw >= 0) && !(j % sizeChessBoard >= sizeChessBoard - 2)) {
-                                                        array[j][i] = 1;
-                                                        array[i][j] = 1;
-                                                    }
-                                                    else {
-                                                        array[j][i] = 0;
-                                                        array[i][j] = 0;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    else {
-                        //obstacle in position (x1, y1) or in (x2, y2)
-                        array[j][i] = 0;
-                        array[i][j] = 0;
-                    }
-                }
-            }
-        }
-        return array;
-    }
-
-    /*
-     Find shortest path from incident matrix
-     * */
-    function bfs(matrix, start, end) {
-        var size = matrix.length;
-        var count = 0;
-        var head = 0;
-        var q = new Array();
-        q[count++] = start;
-        var used = new Array(size);
-        var p = new Array(size);
-        var i;
-        for (i = 0; i < size; i++) {
-            used[i] = false;
-        }
-        used[start] = true;
-        p[start] = -1;
-        var v;
-        while ((head < count)) {
-            v = q[head++];
-            for (i = 0; i < size; i++) {
-                if (!used[i] && (matrix[v][i] == 1)) {
-                    used[i] = true;
-                    q[count++] = i;
-                    p[i] = v; // parents;
-                }
-            }
-        }
-        q = [];
-        if (!used[end]) {
-            //document.write("No path!" + "<br/>");
-            return q;
-        }
-        else {
-            for (i = end; i != -1; i = p[i])
-                q.unshift(i);
-            return q;
-        }
-    }
-
-    /*
-     Finding the shortest path of horse on chess field with obstacles
-     */
-    function createOptimalPath(matrixChess) {
-
-        var testStart = -1;
-        var testEnd = -1;
-
-        var sizeChessBoard = matrixChess.length;
-        var i, j;
-
-        for (i = 0; i < sizeChessBoard; i++) {
-            for (j = 0; j < sizeChessBoard; j++) {
-                if ((matrixChess[i][j] == "s") || (matrixChess[i][j] == "S")) {
-                    testStart = j + i * sizeChessBoard;
-                }
-                else if ((matrixChess[i][j] == "f") || (matrixChess[i][j] == "F")) {
-                    testEnd = j + i * sizeChessBoard;
-                }
-            }
-        }
-
-        var incidenceMatrix = createIncidenceMatrix(matrixChess);
-        //showMatrix(incidenceMatrix);
-
-        var path = bfs(incidenceMatrix, testStart, testEnd);
-        var result = [];
-
-        //optimisation in memory
-        testStart = path.length;
-        for (i = 0; i < testStart; i++) {
-            result.push([~~(path[i] / sizeChessBoard), path[i] % sizeChessBoard]);
-        }
-        return result;
-    }
-};
+//solutions.martyniuk_oleksandra = function (Board) {
+//    // GOES HERE
+//    //var start = new Date();
+//    var result = createOptimalPath(Board);
+////var end = new Date();
+////alert('Time: ' + (end.getTime() - start.getTime()) + ' mc');
+//    //document.write(result);
+//    return result;
+//
+//    /**
+//     Creation incidence matrix for horse in chess
+//     */
+//    function createIncidenceMatrix(matrixChess) {
+//        var sizeChessBoard = matrixChess.length;
+//        var size = sizeChessBoard * sizeChessBoard;
+//        var array = new Array(size);
+//        var i, j;
+//
+//        for (i = 0; i < size; i++) {
+//            array[i] = new Array(size);
+//        }
+//        for (i = 0; i < size; i++) {
+//            for (j = 0; j < size; j++) {
+//                //see only lower triangular matrix
+//                if (i >= j) {
+//                    //down right
+//                    //if start or end =-1 we can't built IncidenceMatrix (j+1*n)
+//                    if ((matrixChess[~~(i / sizeChessBoard)][i % sizeChessBoard] != -1) && (matrixChess[~~(j / sizeChessBoard)][j % sizeChessBoard] != -1)) {
+//                        //down right!
+//                        var dw = j + 2 * sizeChessBoard + 1;
+//                        if ((dw == i) && (dw < size) && (j % sizeChessBoard != (sizeChessBoard - 1))) {
+//                            array[j][i] = 1;
+//                            array[i][j] = 1;
+//                        }
+//                        else {
+//                            //down left!
+//                            dw = j + 2 * sizeChessBoard - 1;
+//                            if ((dw == i) && (dw < size) && (j % sizeChessBoard != 0)) {
+//                                array[j][i] = 1;
+//                                array[i][j] = 1;
+//                            }
+//                            else {
+//                                //up right!
+//                                dw = j - 2 * sizeChessBoard + 1;
+//                                if ((dw == i) && (dw < size) && (dw >= 0) && (j % sizeChessBoard != (sizeChessBoard - 1))) {
+//                                    array[j][i] = 1;
+//                                    array[i][j] = 1;
+//                                }
+//                                else {
+//                                    //up left!
+//                                    dw = j - 2 * sizeChessBoard - 1;
+//                                    if ((dw == i) && (dw >= 0) && (j % sizeChessBoard != 0)) {
+//                                        array[j][i] = 1;
+//                                        array[i][j] = 1;
+//                                    }
+//                                    else {
+//                                        //left up
+//                                        dw = j - sizeChessBoard - 2;
+//                                        if ((dw == i) && (dw < size) && (dw >= 0) && !(j % sizeChessBoard <= 1)) {
+//                                            array[j][i] = 1;
+//                                            array[i][j] = 1;
+//                                        }
+//                                        else {
+//                                            //left down
+//                                            dw = j + sizeChessBoard - 2;
+//                                            if ((dw == i) && (dw < size) && (dw >= 0) && !(j % sizeChessBoard <= 1)) {
+//                                                array[j][i] = 1;
+//                                                array[i][j] = 1;
+//                                            }
+//                                            else {
+//                                                //right up
+//                                                dw = j - sizeChessBoard + 2;
+//                                                if ((dw == i) && (dw < size) && (dw >= 0) && !(j % sizeChessBoard >= sizeChessBoard - 2)) {
+//                                                    array[j][i] = 1;
+//                                                    array[i][j] = 1;
+//                                                }
+//                                                else {
+//                                                    //right down
+//                                                    dw = j + sizeChessBoard + 2;
+//                                                    if ((dw == i) && (dw >= 0) && !(j % sizeChessBoard >= sizeChessBoard - 2)) {
+//                                                        array[j][i] = 1;
+//                                                        array[i][j] = 1;
+//                                                    }
+//                                                    else {
+//                                                        array[j][i] = 0;
+//                                                        array[i][j] = 0;
+//                                                    }
+//                                                }
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
+//                    else {
+//                        //obstacle in position (x1, y1) or in (x2, y2)
+//                        array[j][i] = 0;
+//                        array[i][j] = 0;
+//                    }
+//                }
+//            }
+//        }
+//        return array;
+//    }
+//
+//    /*
+//     Find shortest path from incident matrix
+//     * */
+//    function bfs(matrix, start, end) {
+//        var size = matrix.length;
+//        var count = 0;
+//        var head = 0;
+//        var q = new Array();
+//        q[count++] = start;
+//        var used = new Array(size);
+//        var p = new Array(size);
+//        var i;
+//        for (i = 0; i < size; i++) {
+//            used[i] = false;
+//        }
+//        used[start] = true;
+//        p[start] = -1;
+//        var v;
+//        while ((head < count)) {
+//            v = q[head++];
+//            for (i = 0; i < size; i++) {
+//                if (!used[i] && (matrix[v][i] == 1)) {
+//                    used[i] = true;
+//                    q[count++] = i;
+//                    p[i] = v; // parents;
+//                }
+//            }
+//        }
+//        q = [];
+//        if (!used[end]) {
+//            //document.write("No path!" + "<br/>");
+//            return q;
+//        }
+//        else {
+//            for (i = end; i != -1; i = p[i])
+//                q.unshift(i);
+//            return q;
+//        }
+//    }
+//
+//    /*
+//     Finding the shortest path of horse on chess field with obstacles
+//     */
+//    function createOptimalPath(matrixChess) {
+//
+//        var testStart = -1;
+//        var testEnd = -1;
+//
+//        var sizeChessBoard = matrixChess.length;
+//        var i, j;
+//
+//        for (i = 0; i < sizeChessBoard; i++) {
+//            for (j = 0; j < sizeChessBoard; j++) {
+//                if ((matrixChess[i][j] == "s") || (matrixChess[i][j] == "S")) {
+//                    testStart = j + i * sizeChessBoard;
+//                }
+//                else if ((matrixChess[i][j] == "f") || (matrixChess[i][j] == "F")) {
+//                    testEnd = j + i * sizeChessBoard;
+//                }
+//            }
+//        }
+//
+//        var incidenceMatrix = createIncidenceMatrix(matrixChess);
+//        //showMatrix(incidenceMatrix);
+//
+//        var path = bfs(incidenceMatrix, testStart, testEnd);
+//        var result = [];
+//
+//        //optimisation in memory
+//        testStart = path.length;
+//        for (i = 0; i < testStart; i++) {
+//            result.push([~~(path[i] / sizeChessBoard), path[i] % sizeChessBoard]);
+//        }
+//        return result;
+//    }
+//};
 
 
 // YOUR SOLUTION
@@ -840,13 +826,17 @@ solutions.melnykov_andrii = function (Board) {
         var i = 0;
         var patt = /s/i;
         while (!f && (i < l)) {
-            for (i =0; i < l; i++) {
+            for (i = 0; i < l; i++) {
                 for (var j = 0; j < l; j++) {
-                    if (patt.test(Board[i][j])) {spX = i; spY = j;f = true;}
+                    if (patt.test(Board[i][j])) {
+                        spX = i;
+                        spY = j;
+                        f = true;
+                    }
                 }
             }
         }
-    } ();
+    }();
 
     var mX = [1, 1, -1, -1, 2, 2, -2, -2]; // Knight's moves
     var mY = [2, -2, 2, -2, 1, -1, 1, -1];
@@ -856,9 +846,9 @@ solutions.melnykov_andrii = function (Board) {
     var q = []; // queue
 
     Board[spX][spY] = 0;
-    q.push([spX,spY]);
+    q.push([spX, spY]);
 
-    !function searchFinish () {
+    !function searchFinish() {
         var patt = /f/i;
         while ((q.length > 0) && !ff) {
             var p = q.shift(); // first in the queue
@@ -866,8 +856,17 @@ solutions.melnykov_andrii = function (Board) {
                 var npX = p[0] + mX[i]; // next point X
                 var npY = p[1] + mY[i];
                 if ((npX < l ) && (npY < l) && (npY > -1) && (npX > -1)) {
-                    if (patt.test(Board[npX][npY])) {ff = true; fpX = npX; fpY = npY; fpV = Board[p[0]][p[1]] + 1; break;}
-                    if (Board[npX][npY] === 0) {Board[npX][npY] = Board[p[0]][p[1]] + 1; q.push([npX, npY]);}
+                    if (patt.test(Board[npX][npY])) {
+                        ff = true;
+                        fpX = npX;
+                        fpY = npY;
+                        fpV = Board[p[0]][p[1]] + 1;
+                        break;
+                    }
+                    if (Board[npX][npY] === 0) {
+                        Board[npX][npY] = Board[p[0]][p[1]] + 1;
+                        q.push([npX, npY]);
+                    }
                 }
             }
         }
@@ -881,16 +880,19 @@ solutions.melnykov_andrii = function (Board) {
     var pY = fpY;
 
     !function searchPath() {
-        while (!fs ) {
+        while (!fs) {
             for (var i = 0; i < 8; i++) {
                 var npX = pX + mX[i]; // previous point
                 var npY = pY + mY[i];
                 if ((npX < l) && (npY < l) && (npX > -1) && (npY > -1)) {
                     if (Board[npX][npY] === "S") {
-                        fs = true; break;
+                        fs = true;
+                        break;
                     }
                     if ((Board[npX][npY] > 0) && (Board[npX][npY] === Board[pX][pY] - 1)) {
-                        path.push([npX, npY]); pX = npX; pY = npY;
+                        path.push([npX, npY]);
+                        pX = npX;
+                        pY = npY;
                     }
                 }
             }
@@ -1144,175 +1146,175 @@ solutions.pylhun_valerii = function (Board) {
 
 
 // YOUR SOLUTION
-solutions.vaskovska_anna = function (Board) {
-    //get field height and width
-    var fieldHeight = fieldWidth = Board.length;
-    var fieldWidth = Board[0].length;
-
-    //get start and finish points
-    var start = new Point();
-    var finish = new Point();
-
-    initCoordinates();
-
-    //list of unchecked points
-    var openSet = [];
-
-    //list of checked points
-    var closeSet = [];
-
-    //add start point to list of unchecked points
-    openSet.push(start);
-
-    while (openSet.length > 0) {
-
-        // sort array by ascending distance to finish point
-        //and get firts of it. This point will have the smallest distance to finish
-        var currentPoint = openSet.sort(function (a, b) {
-            return a.distance - b.distance;
-        })[0];
-
-        //if this point is finish one - return way to it
-        if (currentPoint.x == finish.x && currentPoint.y == finish.y) {
-            var path = getPath(currentPoint);
-            return path;
-        }
-
-        //delete this point from inchecked list
-        openSet.shift();
-        //and put on checked list
-        closeSet.push(currentPoint);
-
-        //find all legal neighbours of current point
-        var neighbours = getNeighbours(currentPoint);
-
-        //for every neighbour point
-        for (var i = 0; i < neighbours.length; i++) {
-
-            //if it is already cheched - continue
-            if (exist(closeSet, neighbours[i])) continue;
-
-            //if it is not cheched but already exist in unchecked list - return it
-            var openNode = (exist(openSet, neighbours[i])) ? getSame(openSet, neighbours[i]) : null;
-
-            //null means that point isn't exist in unchecked list
-            //so add it
-            if (openNode == null) {
-                openSet.push(neighbours[i]);
-            }
-            else {
-                //сompare point from list and new neighbour point
-                //and add to unchecked list point that has
-                //smaller distance to finish
-                if (openNode.distance < neighbours[i].distance) {
-                    openNode.сameFrom = currentPoint;
-                    openNode.distance = neighbours[i].distance;
-                    openSet.push(openNode);
-                }
-            }
-        }
-    }
-
-    // if the way isn't found - return "=("
-    return "=(";
-
-    function getNeighbours(currentPoint) {
-        var result = [];
-        var neighbourPoints = [];
-
-        //all possible moves for forse
-        var moveX = [1, 2, 2, 1, -1, -2, -2, -1];
-        var moveY = [-2, -1, 1, 2, 2, 1, -1, -2];
-
-        //get all neighbours
-        for (var i = 0; i < 8; i++) {
-            neighbourPoints.push(new Point(currentPoint.x + moveX[i], currentPoint.y + moveY[i]));
-        }
-
-        //validate neighbour points and calculate distance to finish point for each of valid one
-        for (var i = 0; i < neighbourPoints.length; i++) {
-            var point = neighbourPoints[i];
-
-            if (point.x < 0 || point.x >= fieldWidth) continue;
-            if (point.y < 0 || point.y >= fieldHeight) continue;
-            if (Board[point.x][point.y] == '-1') continue;
-
-            var newPoint = new Point(point.x, point.y);
-
-            newPoint.cameFrom = currentPoint;
-            newPoint.distance = findDistance(point, finish);
-            result.push(newPoint);
-        }
-
-        return result;
-
-    }
-
-    function getPath(point) {
-        var result = [];
-        var currentNode = point;
-        while (currentNode != null) {
-            result.push([currentNode.x, currentNode.y]);
-            currentNode = currentNode.cameFrom;
-        }
-        result.reverse();
-        return result;
-    }
-
-    function findDistance(from, to) {
-        return Math.sqrt(Math.pow((from.x - to.y), 2) + Math.pow((from.y - to.y), 2));
-    }
-
-    function Point(x, y) {
-        this.x = x;
-        this.y = y;
-        this.cameFrom = null;
-        this.distance = 0;
-    }
-
-    function exist(array, element) {
-        for (var i = 0; i < array.length; i++) {
-            if (element.x == array[i].x && element.y == array[i].y) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    function getSame(array, element) {
-        for (var i = 0; i < array.length; i++) {
-            if (element.x == array[i].x && element.y == array[i].y) {
-                return array[i];
-            }
-        }
-        return false;
-    }
-
-    function initCoordinates() {
-
-        function findCoordinates(direction) {
-            var x, y;
-            for (var i = 0; i < fieldHeight; i++) {
-                if (Board[i].indexOf(direction) != -1) {
-                    y = Board[i].indexOf(direction);
-                    x = i;
-                    return {
-                        'x': x,
-                        'y': y,
-                    };
-                }
-            }
-            return false;
-        }
-
-        var coordX = findCoordinates('s');
-        var coordY = findCoordinates('f');
-        start.x = coordX.x;
-        start.y = coordX.y;
-        finish.x = coordY.x;
-        finish.y = coordY.y;
-    }
-};
+//solutions.vaskovska_anna = function (Board) {
+//    //get field height and width
+//    var fieldHeight = fieldWidth = Board.length;
+//    var fieldWidth = Board[0].length;
+//
+//    //get start and finish points
+//    var start = new Point();
+//    var finish = new Point();
+//
+//    initCoordinates();
+//
+//    //list of unchecked points
+//    var openSet = [];
+//
+//    //list of checked points
+//    var closeSet = [];
+//
+//    //add start point to list of unchecked points
+//    openSet.push(start);
+//
+//    while (openSet.length > 0) {
+//
+//        // sort array by ascending distance to finish point
+//        //and get firts of it. This point will have the smallest distance to finish
+//        var currentPoint = openSet.sort(function (a, b) {
+//            return a.distance - b.distance;
+//        })[0];
+//
+//        //if this point is finish one - return way to it
+//        if (currentPoint.x == finish.x && currentPoint.y == finish.y) {
+//            var path = getPath(currentPoint);
+//            return path;
+//        }
+//
+//        //delete this point from inchecked list
+//        openSet.shift();
+//        //and put on checked list
+//        closeSet.push(currentPoint);
+//
+//        //find all legal neighbours of current point
+//        var neighbours = getNeighbours(currentPoint);
+//
+//        //for every neighbour point
+//        for (var i = 0; i < neighbours.length; i++) {
+//
+//            //if it is already cheched - continue
+//            if (exist(closeSet, neighbours[i])) continue;
+//
+//            //if it is not cheched but already exist in unchecked list - return it
+//            var openNode = (exist(openSet, neighbours[i])) ? getSame(openSet, neighbours[i]) : null;
+//
+//            //null means that point isn't exist in unchecked list
+//            //so add it
+//            if (openNode == null) {
+//                openSet.push(neighbours[i]);
+//            }
+//            else {
+//                //сompare point from list and new neighbour point
+//                //and add to unchecked list point that has
+//                //smaller distance to finish
+//                if (openNode.distance < neighbours[i].distance) {
+//                    openNode.сameFrom = currentPoint;
+//                    openNode.distance = neighbours[i].distance;
+//                    openSet.push(openNode);
+//                }
+//            }
+//        }
+//    }
+//
+//    // if the way isn't found - return "=("
+//    return "=(";
+//
+//    function getNeighbours(currentPoint) {
+//        var result = [];
+//        var neighbourPoints = [];
+//
+//        //all possible moves for forse
+//        var moveX = [1, 2, 2, 1, -1, -2, -2, -1];
+//        var moveY = [-2, -1, 1, 2, 2, 1, -1, -2];
+//
+//        //get all neighbours
+//        for (var i = 0; i < 8; i++) {
+//            neighbourPoints.push(new Point(currentPoint.x + moveX[i], currentPoint.y + moveY[i]));
+//        }
+//
+//        //validate neighbour points and calculate distance to finish point for each of valid one
+//        for (var i = 0; i < neighbourPoints.length; i++) {
+//            var point = neighbourPoints[i];
+//
+//            if (point.x < 0 || point.x >= fieldWidth) continue;
+//            if (point.y < 0 || point.y >= fieldHeight) continue;
+//            if (Board[point.x][point.y] == '-1') continue;
+//
+//            var newPoint = new Point(point.x, point.y);
+//
+//            newPoint.cameFrom = currentPoint;
+//            newPoint.distance = findDistance(point, finish);
+//            result.push(newPoint);
+//        }
+//
+//        return result;
+//
+//    }
+//
+//    function getPath(point) {
+//        var result = [];
+//        var currentNode = point;
+//        while (currentNode != null) {
+//            result.push([currentNode.x, currentNode.y]);
+//            currentNode = currentNode.cameFrom;
+//        }
+//        result.reverse();
+//        return result;
+//    }
+//
+//    function findDistance(from, to) {
+//        return Math.sqrt(Math.pow((from.x - to.y), 2) + Math.pow((from.y - to.y), 2));
+//    }
+//
+//    function Point(x, y) {
+//        this.x = x;
+//        this.y = y;
+//        this.cameFrom = null;
+//        this.distance = 0;
+//    }
+//
+//    function exist(array, element) {
+//        for (var i = 0; i < array.length; i++) {
+//            if (element.x == array[i].x && element.y == array[i].y) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
+//
+//    function getSame(array, element) {
+//        for (var i = 0; i < array.length; i++) {
+//            if (element.x == array[i].x && element.y == array[i].y) {
+//                return array[i];
+//            }
+//        }
+//        return false;
+//    }
+//
+//    function initCoordinates() {
+//
+//        function findCoordinates(direction) {
+//            var x, y;
+//            for (var i = 0; i < fieldHeight; i++) {
+//                if (Board[i].indexOf(direction) != -1) {
+//                    y = Board[i].indexOf(direction);
+//                    x = i;
+//                    return {
+//                        'x': x,
+//                        'y': y,
+//                    };
+//                }
+//            }
+//            return false;
+//        }
+//
+//        var coordX = findCoordinates('s');
+//        var coordY = findCoordinates('f');
+//        start.x = coordX.x;
+//        start.y = coordX.y;
+//        finish.x = coordY.x;
+//        finish.y = coordY.y;
+//    }
+//};
 
 var Nsmall = 50;
 var Nbig = 1000;
