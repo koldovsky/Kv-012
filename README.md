@@ -1,6 +1,6 @@
 # Kv-012
 
-![build](https://travis-ci.org/ITsvetkoFF/Kv-012.svg?branch=master)
+![build](https://travis-ci.org/ITsvetkoFF/Kv-012.svg?branch=master) 
 
 [Travis](https://travis-ci.org/ITsvetkoFF/Kv-012/builds)
 
